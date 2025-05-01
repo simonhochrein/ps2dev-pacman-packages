@@ -1,0 +1,27 @@
+pkgname=iop-binutils
+pkgver=2_44
+pkgrel=1
+pkgdesc=""
+arch=("any")
+options=(!strip libtool staticlibs)
+url="https://github.com/bminor/binutils-gdb"
+source=("${url}/archive/refs/tags/binutils-${pkgver}.tar.gz")
+
+prepare() {
+	cd binutils-gdb-binutils-$pkgver
+
+	./configure --target=mipsel-none-elf --prefix="${PS2DEV}/iop" --disable-separate-code --disable-sim --disable-gdb --disable-nls --with-python=no
+}
+
+build() {
+	cd binutils-gdb-binutils-$pkgver
+	make
+}
+
+package() {
+	cd binutils-gdb-binutils-$pkgver
+	make DESTDIR="$pkgdir" install-strip
+	rm -rf "$pkgdir"/${PS2DEV}/iop/share
+}
+
+sha256sums=("4960d1fb6d367c3c828f6e674b39c347f9fc824a24079382f68377476cb8b475")
