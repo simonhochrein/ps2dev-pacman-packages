@@ -9,7 +9,7 @@ source=("https://github.com/ps2dev/ps2sdk/archive/refs/heads/master.tar.gz")
 
 build() {
 	cd ps2sdk-master
-	make
+	make -j1
 }
 
 package() {
