@@ -4,7 +4,7 @@ pkgrel=1
 pkgdesc="Newlib for PS2 EE"
 arch=("any")
 url="https://github.com/ps2dev/newlib"
-depends=('ee-gcc-stage1')
+depends=('ee-gcc')
 source=("${url}/archive/refs/heads/ee-v${pkgver}.tar.gz")
 sha256sums=('SKIP')
 
