@@ -1,0 +1,57 @@
+pkgname=iop-gcc
+pkgver=14.2.0
+pkgrel=1
+pkgdesc=""
+arch=("any")
+options=(!strip libtool staticlibs)
+url="https://github.com/gcc-mirror/gcc"
+source=("${url}/archive/refs/tags/releases/gcc-${pkgver}.tar.gz")
+
+_prefix="/opt/ps2dev/iop"
+
+prepare() {
+	mkdir -p gcc-build
+	cd gcc-build
+
+	cflags="-O2 -gdwarf-2 -gz"
+
+	CFLAGS_FOR_TARGET="$cflags" \
+	CXXFLAGS_FOR_TARGET="$cflags" \
+	../gcc-releases-gcc-$pkgver/configure --target=mipsel-none-elf \
+		--prefix="${_prefix}" \
+		--enable-languages="c,c++" \
+		--with-float=soft \
+        --with-headers=no \
+        --without-newlib \
+        --without-cloog \
+        --without-ppl \
+        --disable-decimal-float \
+        --disable-libada \
+        --disable-libatomic \
+        --disable-libffi \
+        --disable-libgomp \
+        --disable-libmudflap \
+        --disable-libquadmath \
+        --disable-libssp \
+        --disable-libstdcxx-pch \
+        --disable-multilib \
+        --disable-shared \
+        --disable-threads \
+        --disable-target-libiberty \
+        --disable-target-zlib \
+        --disable-nls \
+        --disable-tls \
+        --disable-libstdcxx
+}
+
+build() {
+	cd gcc-build
+	make all
+}
+
+package() {
+	cd gcc-build
+	make DESTDIR="$pkgdir" install-strip
+}
+
+sha256sums=("201c92bf612ab0a357fdbb3db312f720eefaa49d6ce02825bbb5468d5ee1d07a")

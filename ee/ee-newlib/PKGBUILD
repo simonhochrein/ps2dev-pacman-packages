@@ -1,0 +1,42 @@
+pkgname=ee-newlib
+pkgver=4.5.0
+pkgrel=1
+pkgdesc="Newlib for PS2 EE"
+arch=("any")
+url="https://github.com/ps2dev/newlib"
+depends=('ee-gcc-stage1')
+source=("${url}/archive/refs/heads/ee-v${pkgver}.tar.gz")
+sha256sums=('SKIP')
+
+_target=mips64r5900el-ps2-elf
+_prefix="$PS2DEV/ee"
+_sysroot="$_prefix/$_target"
+
+prepare() {
+  mkdir -p build
+}
+
+build() {
+  cd build
+  ../newlib-ee-v$pkgver/configure \
+    --target=$_target \
+    --prefix=$_prefix \
+    --with-sysroot=$_sysroot \
+    --enable-newlib-retargetable-locking \
+    --enable-newlib-multithread \
+    --enable-newlib-io-c99-formats \
+    CFLAGS_FOR_TARGET="-O2 -gdwarf-2 -gz" \
+    CXXFLAGS_FOR_TARGET="-O2 -gdwarf-2 -gz"
+  make all
+}
+
+package() {
+  cd build
+  make DESTDIR="$pkgdir" install-strip
+  rm $pkgdir$_sysroot/include/sched.h
+  rm $pkgdir$_sysroot/include/sys/sched.h
+  rm $pkgdir$_sysroot/include/sys/_pthreadtypes.h
+  rm $pkgdir$_sysroot/include/pthread.h
+  rm $pkgdir$_sysroot/lib/crt0.o
+}
+

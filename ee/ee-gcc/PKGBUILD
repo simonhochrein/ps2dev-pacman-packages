@@ -1,0 +1,52 @@
+pkgname=ee-gcc
+pkgver=14.2.0
+pkgrel=1
+pkgdesc="Full GCC for PS2 EE using Newlib"
+arch=("any")
+options=(!strip libtool staticlibs)
+url="https://github.com/ps2dev/gcc"
+depends=('ee-newlib')
+source=("${url}/archive/refs/heads/ee-v${pkgver}.tar.gz")
+sha256sums=('SKIP')
+
+conflicts=(ee-gcc-stage1)
+provides=(ee-gcc)
+
+_target=mips64r5900el-ps2-elf
+_prefix="$PS2DEV/ee"
+_sysroot="$_prefix/$_target"
+
+prepare() {
+  mkdir -p build-stage2
+}
+
+build() {
+  cd build-stage2
+  ../gcc-ee-v$pkgver/configure \
+    --target=$_target \
+    --prefix=$_prefix \
+    --enable-languages="c,c++" \
+    --with-float=hard \
+    --with-sysroot=$_sysroot \
+    --with-native-system-header-dir="/include" \
+    --with-newlib \
+    --disable-libssp \
+    --disable-multilib \
+    --disable-nls \
+    --disable-tls \
+    --disable-libstdcxx-pch \
+    --disable-shared \
+    --enable-checking=release \
+    --without-ppl \
+    --enable-cxx-flags=-G0 \
+    --enable-threads=posix \
+    CFLAGS="-O2 -fpch-preprocess" \
+    CXXFLAGS="-O2 -fpch-preprocess"
+  make all
+}
+
+package() {
+  cd build-stage2
+  make DESTDIR="$pkgdir" install-strip
+}
+

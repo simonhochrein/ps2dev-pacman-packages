@@ -1,0 +1,53 @@
+pkgname=ee-gcc-stage1
+pkgver=14.2.0
+pkgrel=1
+pkgdesc="Stage 1 GCC for PS2 EE"
+arch=("any")
+options=(!strip libtool staticlibs)
+url="https://github.com/ps2dev/gcc"
+depends=('gmp' 'mpfr' 'libmpc' 'isl' 'zlib')
+source=("${url}/archive/refs/heads/ee-v${pkgver}.tar.gz")
+sha256sums=('SKIP')
+
+provides=("ee-gcc")
+
+_target=mips64r5900el-ps2-elf
+_prefix="$PS2DEV/ee"
+
+prepare() {
+  mkdir -p build-stage1
+}
+
+build() {
+  cd build-stage1
+  ../gcc-ee-v$pkgver/configure \
+    --target=$_target \
+    --prefix=$_prefix \
+    --enable-languages="c" \
+    --with-float=hard \
+    --without-headers \
+    --without-newlib \
+    --disable-libgcc \
+    --disable-shared \
+    --disable-threads \
+    --disable-multilib \
+    --disable-libatomic \
+    --disable-nls \
+    --disable-tls \
+    --disable-libssp \
+    --disable-libgomp \
+    --disable-libmudflap \
+    --disable-libquadmath \
+    --disable-libstdcxx-pch \
+    CFLAGS_FOR_TARGET="$cflags -Wno-error=format-security" \
+    CXXFLAGS_FOR_TARGET="$cflags -Wno-error=format-security" \
+    CFLAGS="-O2 -gdwarf-2 -gz -fpch-preprocess -Wno-error=format-security" \
+    CXXFLAGS="-O2 -gdwarf-2 -gz -fpch-preprocess -Wno-error=format-security"
+  make all-gcc
+}
+
+package() {
+  cd build-stage1
+  make DESTDIR="$pkgdir" install-gcc
+  rm -rf $pkgdir$_prefix/share
+}

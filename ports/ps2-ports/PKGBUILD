@@ -1,0 +1,20 @@
+pkgname=ps2-ports
+pkgver=1.0.0
+pkgrel=1
+pkgdesc=""
+arch=("any")
+options=(!strip libtool staticlibs)
+url="https://github.com/ps2dev/ps2sdk-ports"
+source=("https://github.com/ps2dev/ps2sdk-ports/archive/refs/heads/master.tar.gz")
+depends=("ee-gcc" "iop-gcc" "dvp-binutils")
+
+build() {
+	cd ps2sdk-ports-master
+	make
+}
+
+package() {
+	cd ps2sdk-ports-master
+}
+
+sha256sums=("SKIP")

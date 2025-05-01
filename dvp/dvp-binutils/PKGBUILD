@@ -1,0 +1,29 @@
+pkgname=dvp-binutils
+pkgver=2.44.0
+pkgrel=1
+pkgdesc=""
+arch=("any")
+options=(!strip libtool staticlibs)
+url="https://github.com/simonhochrein/binutils-gdb"
+source=("${url}/archive/refs/heads/dvp-v${pkgver}.tar.gz")
+
+
+prepare() {
+	mkdir -p binutils-build
+	cd binutils-build
+
+	../binutils-gdb-dvp-v${pkgver}/configure --target=dvp --prefix="${PS2DEV}/dvp" --disable-gdb --disable-nls --disable-build-warning
+}
+
+build() {
+	cd binutils-build
+	make
+}
+
+package() {
+	cd binutils-build
+	make DESTDIR="$pkgdir" install-strip
+	rm -rf "$pkgdir"/${PS2DEV}/dvp/share
+}
+
+sha256sums=("0dd7a92adbbd43e33e6e2d968fdd8a578c6a5d881d3f4c75a18d0d474c68ec1d")

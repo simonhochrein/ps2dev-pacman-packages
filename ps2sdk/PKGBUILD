@@ -1,0 +1,20 @@
+pkgname=ps2sdk
+pkgver=1.4.0
+pkgrel=1
+pkgdesc=""
+arch=("any")
+options=(!strip libtool staticlibs)
+url="https://github.com/ps2dev/ps2sdk"
+source=("https://github.com/ps2dev/ps2sdk/archive/refs/heads/master.tar.gz")
+
+build() {
+	cd ps2sdk-master
+	make
+}
+
+package() {
+	cd ps2sdk-master
+	make DESTDIR="$pkgdir" install
+}
+
+sha256sums=("SKIP")

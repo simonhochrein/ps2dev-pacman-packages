@@ -1,0 +1,53 @@
+pkgname=ee-newlib-nano
+pkgver=4.5.0
+pkgrel=1
+pkgdesc="Newlib for PS2 EE Nano"
+arch=("any")
+url="https://github.com/ps2dev/newlib"
+depends=('ee-gcc-stage1')
+source=("${url}/archive/refs/heads/ee-v${pkgver}.tar.gz")
+sha256sums=('SKIP')
+
+_target=mips64r5900el-ps2-elf
+_prefix="$PS2DEV/ee"
+_install_path="$_prefix/$_target"
+_sysroot="$_prefix/$_target"
+
+prepare() {
+  export CFLAGS_FOR_TARGET="-DPREFER_SIZE_OVER_SPEED=1 -Os -gdwarf-2 -gz"
+  mkdir -p build
+  mkdir -p tmp
+}
+
+build() {
+  cd build
+  ../newlib-ee-v$pkgver/configure \
+    --target=$_target \
+    --prefix=/tmp \
+    --with-sysroot=$_sysroot \
+    --disable-newlib-supplied-syscalls \
+    --enable-newlib-reent-small \
+    --disable-newlib-fvwrite-in-streamio \
+    --disable-newlib-fseek-optimization \
+    --disable-newlib-wide-orient \
+    --enable-newlib-nano-malloc \
+    --disable-newlib-unbuf-stream-opt \
+    --enable-lite-exit \
+    --enable-newlib-global-atexit \
+    --enable-newlib-nano-formatted-io \
+    --enable-newlib-retargetable-locking \
+    --enable-newlib-multithread \
+    --disable-nls
+  make all
+}
+
+package() {
+  cd build
+  make DESTDIR="$pkgdir" install-strip
+  cd ..
+  
+  install -D -c -m 644 ${pkgdir}/tmp/$_target/lib/libc.a $pkgdir$_install_path/lib/libc_nano.a
+  install -D -c -m 644 ${pkgdir}/tmp/$_target/lib/libg.a $pkgdir$_install_path/lib/libg_nano.a
+  install -D -c -m 644 ${pkgdir}/tmp/$_target/lib/libm.a $pkgdir$_install_path/lib/libm_nano.a
+}
+
