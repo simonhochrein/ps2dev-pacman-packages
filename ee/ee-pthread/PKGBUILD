@@ -1,0 +1,24 @@
+pkgname=ee-pthread
+pkgver=platform_agnostic
+pkgrel=1
+pkgdesc=""
+arch=("any")
+options=(!strip libtool staticlibs)
+url="https://github.com/bminor/binutils-gdb"
+source=("https://github.com/ps2dev/pthread-embedded/archive/refs/heads/platform_agnostic.tar.gz")
+
+prepare() {
+	export PS2DEV=/opt/ps2dev
+}
+
+build() {
+	cd pthread-embedded-platform_agnostic/platform/ps2
+	make all
+}
+
+package() {
+	cd pthread-embedded-platform_agnostic/platform/ps2
+	make DESTDIR="$pkgdir${PS2DEV}/ee/mips64r5900el-ps2-elf" install
+}
+
+sha256sums=("SKIP")
